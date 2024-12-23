@@ -191,10 +191,10 @@ additionalCheckbox.Position = UDim2.new(
     clonedButton.Position.Y.Scale + clonedButton.Size.Y.Scale + spacing.Scale, -- Position it below the cloned button
     clonedButton.Position.Y.Offset + clonedButton.Size.Y.Offset + spacing.Offset
 )
-additionalCheckbox.Text = "Additional Action"
+additionalCheckbox.Text = "Attack Action"
 additionalCheckbox.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- New checkbox color
 additionalCheckbox.Font = Enum.Font.SourceSans
-additionalCheckbox.TextSize = 14 -- Size of the text
+additionalCheckbox.TextSize = 20 -- Size of the text
 
 -- Global variable to track additional action state
 local isAdditionalActionActive = false
