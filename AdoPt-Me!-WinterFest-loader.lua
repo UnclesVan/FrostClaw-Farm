@@ -97,49 +97,6 @@ local function isMinigameInGameAppEnabled()
     return minigameInGameApp and minigameInGameApp.Enabled
 end
 
--- Function to handle the continuous actions
-local function handleActions()
-    if isActive then -- Only execute actions if active
-        if not isMinigameInGameAppEnabled() then
-            invokeServer()
-            if startGameButton and startGameButton.Visible then
-                clickButton(startGameButton)
-            else
-                print("StartGame button not found or not visible.")
-            end
-        else
-            print("MinigameInGameApp is enabled. Stopping further actions.")
-            isActive = false -- Disable actions if the MinigameInGameApp is enabled
-        end
-    end
-end
-
--- Function to get button by name from the Hotbar
-local function getButton(buttonName)
-    local hotbarApp = playerGui:WaitForChild("FrostclawsRevengeHotbarApp")
-    local hotbar = hotbarApp:WaitForChild("Hotbar")
-    local buttonFrame = hotbar:FindFirstChild(buttonName)
-    return buttonFrame and buttonFrame:FindFirstChild("Button")
-end
-
--- Function to trigger button events
-local function triggerButton(button)
-    if button then
-        for _, connection in pairs(getconnections(button.MouseButton1Down)) do
-            connection:Fire()
-        end
-        for _, connection in pairs(getconnections(button.MouseButton1Click)) do
-            connection:Fire()
-        end
-        for _, connection in pairs(getconnections(button.MouseButton1Up)) do
-            connection:Fire()
-        end
-        print(button.Name .. " was triggered!")
-    else
-        print("Button not found!")
-    end
-end
-
 -- Checkbox behavior for the cloned button
 local function handleCheckbox(button)
     local isChecked = false -- Track the toggle state of the button
@@ -181,113 +138,86 @@ end
 -- Apply checkbox functionality to the cloned button
 handleCheckbox(clonedButton)
 
--- Create Additional Checkbox for another action
-local additionalCheckbox = Instance.new("TextButton")
-additionalCheckbox.Parent = clonedButton.Parent
-additionalCheckbox.Size = UDim2.new(0.15, 0, 0.05, 0)
-additionalCheckbox.Position = UDim2.new(
+-- Additional Action Button
+local additionalActionButton = Instance.new("TextButton")
+additionalActionButton.Parent = clonedButton.Parent
+additionalActionButton.Size = UDim2.new(0.15, 0, 0.05, 0)
+additionalActionButton.Position = UDim2.new(
     clonedButton.Position.X.Scale,
     clonedButton.Position.X.Offset,
     clonedButton.Position.Y.Scale + clonedButton.Size.Y.Scale + spacing.Scale, -- Position it below the cloned button
     clonedButton.Position.Y.Offset + clonedButton.Size.Y.Offset + spacing.Offset
 )
-additionalCheckbox.Text = "Attack Action"
-additionalCheckbox.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- New checkbox color
-additionalCheckbox.Font = Enum.Font.SourceSans
-additionalCheckbox.TextSize = 20 -- Size of the text
+additionalActionButton.Text = "Additional Action"
+additionalActionButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Blue color (inactive)
+additionalActionButton.Font = Enum.Font.SourceSans
+additionalActionButton.TextSize = 20 -- Size of the text
 
--- Global variable to track additional action state
-local isAdditionalActionActive = false
+local isAdditionalActionActive = false -- Global variable to track additional action state
 
--- Checkbox behavior for the additional checkbox
-local function handleAdditionalCheckbox(button)
-    local isChecked = false -- Track the toggle state for the additional checkbox
+-- Function to handle the additional action in a loop
+local function handleAdditionalAction()
+    local joyBombButton = playerGui:WaitForChild("FrostclawsRevengeHotbarApp"):WaitForChild("Hotbar"):WaitForChild("JoyBombButton"):FindFirstChild("Button")
+    local swordSlashButton = playerGui:WaitForChild("FrostclawsRevengeHotbarApp"):WaitForChild("Hotbar"):WaitForChild("SwordSlashButton"):FindFirstChild("Button")
 
-    -- Create a Frame for the checkbox
-    local checkboxFrame = Instance.new("Frame")
-    checkboxFrame.Parent = button
-    checkboxFrame.Size = UDim2.new(0.15, 0, 0.2, 0) -- Adjust size as needed
-    checkboxFrame.AnchorPoint = Vector2.new(1, 0.5) -- Anchor to right edge
-    checkboxFrame.Position = UDim2.new(1, -3, 0.5, 0)
-    checkboxFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Make the frame visible
+    -- Triggering the buttons
+    if joyBombButton then
+        print("Triggering JoyBombButton...")
+        clickButton(joyBombButton)
+    else
+        print("JoyBombButton not found!")
+    end
 
-    -- Create a checkmark inside the frame
-    local checkmark = Instance.new("ImageLabel")
-    checkmark.Parent = checkboxFrame
-    checkmark.Size = UDim2.new(0.6, 0, 0.6, 0)
-    checkmark.AnchorPoint = Vector2.new(0.5, 0.5)
-    checkmark.Position = UDim2.new(0.5, 0, 0.5, 0)
-    checkmark.BackgroundTransparency = 1
-    checkmark.Image = "rbxassetid://3570695787"
-    checkmark.Visible = false -- Initially hide the checkmark
-
-    -- Toggle behavior on click
-    button.MouseButton1Click:Connect(function()
-        isChecked = not isChecked
-        checkboxFrame.BackgroundColor3 = isChecked and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 255, 255)
-        checkmark.Visible = isChecked
-
-        -- Activate or deactivate the additional action based on the checkbox state
-        isAdditionalActionActive = isChecked
-        if isAdditionalActionActive then
-            print("Additional action is now ON")
-
-            -- Start a loop to trigger actions if checked
-            spawn(function()
-                while isAdditionalActionActive do
-                    local joyBombButton = getButton("JoyBombButton")
-                    local swordSlashButton = getButton("SwordSlashButton")
-
-                    -- Trigger buttons
-                    if joyBombButton then
-                        triggerButton(joyBombButton)
-                    else
-                        print("JoyBombButton not found!")
-                    end
-
-                    if swordSlashButton then
-                        triggerButton(swordSlashButton) -- Trigger SwordSlashButton
-                    else
-                        print("SwordSlashButton not found!")
-                    end
-
-                    wait(0.1) -- Small delay to prevent performance issues
-                end
-                print("Additional action has been turned OFF.")
-            end)
-        else
-            print("Additional action is now OFF.")
-        end
-    end)
+    if swordSlashButton then
+        print("Triggering SwordSlashButton...")
+        clickButton(swordSlashButton)
+    else
+        print("SwordSlashButton not found!")
+    end
 end
 
--- Apply checkbox functionality to the additional checkbox
-handleAdditionalCheckbox(additionalCheckbox)
+-- Toggle functionality for the additional action button
+additionalActionButton.MouseButton1Click:Connect(function()
+    isAdditionalActionActive = not isAdditionalActionActive
+    if isAdditionalActionActive then
+        print("Additional Action is now ON. Triggering actions...")
+        -- Change button color to green when active
+        additionalActionButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0) -- Green color (active)
+        spawn(function()
+            while isAdditionalActionActive do
+                handleAdditionalAction()
+                wait(0.5) -- Adjust the delay as needed (interval between actions)
+            end
+            print("Additional Action has been turned OFF.")
+            -- Change button color to blue when deactivated
+            additionalActionButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Blue color (inactive)
+        end)
+    else
+        print("Additional Action is now OFF.")
+        -- Change button color to blue when deactivated
+        additionalActionButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Blue color (inactive)
+    end
+end)
 
 -- Main loop to continuously check the status and perform actions
 while true do
     if isActive then
-        handleActions()
-
-        -- Get the JoyBombButton and SwordSlashButton
-        local joyBombButton = getButton("JoyBombButton")
-        local swordSlashButton = getButton("SwordSlashButton")
-
-        print("Attempting to trigger JoyBombButton and SwordSlashButton...")
-
-        -- Trigger buttons at intervals
-        if joyBombButton then
-            triggerButton(joyBombButton)
+        if not isMinigameInGameAppEnabled() then
+            -- If the MinigameInGameApp is disabled, click the StartGame button and invoke the server
+            if startGameButton and startGameButton.Visible then
+                print("Attempting to repeatedly click the StartGame button...")
+                clickButton(startGameButton)
+            end
+            -- Keep calling the invokeServer function
+            invokeServer()
         else
-            print("JoyBombButton not found!")
+            print("MinigameInGameApp is enabled. Stopping actions.")
         end
 
-        if swordSlashButton then
-            triggerButton(swordSlashButton) -- This triggers the SwordSlashButton
-        else
-            print("SwordSlashButton not found!")
-        end
+        wait(0.5) -- Adjust the delay to control how fast it clicks
+    else
+        print("Script is OFF. Waiting for activation.")
     end
 
-    wait(0.1) -- Add a short delay to prevent excessive resource usage
+    wait(0.1) -- Add a small delay to prevent excessive resource usage
 end
