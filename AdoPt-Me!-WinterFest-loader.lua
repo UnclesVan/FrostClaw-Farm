@@ -3,8 +3,6 @@ loadstring(game:HttpGet(('https://raw.githubusercontent.com/ReQiuYTPL/hub/main/R
 wait(1)
 
 
---dehash remotes before script
-
 
 wait(2)
 
