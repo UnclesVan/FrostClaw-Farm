@@ -1,5 +1,5 @@
 --tora script execute first
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ToraScript/Script/main/AdoptMeWINTER", true))()
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/ReQiuYTPL/hub/main/ReQiuYTPLHub.lua'),true))()
 wait(1)
 
 
